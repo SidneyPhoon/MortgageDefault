@@ -79,16 +79,19 @@ def saveDB(FirstName, LastName, Income, AppliedOnline, Residence, YearCurrentAdd
 def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 		YearsCurrentEmployer, NumberOfCards, CCDebt, Loans, LoanAmount, SalePrice, Location):
 	
-	service_path = 'https://ibm-watson-ml.mybluemix.net'
-	username = '*****'
-	password = '****'
-
-	headers = urllib3.util.make_headers(basic_auth='{}:{}'.format(username, password))
-	url = '{}/v2/identity/token'.format(service_path)
+	wml_credentials={"url": "https://ibm-watson-ml.mybluemix.net",
+	"username": "xxx",
+	"password": "xxx"}
+	
+	headers = urllib3.util.make_headers(basic_auth='{username}:{password}'.format(username=wml_credentials['username'], password=wml_credentials['password']))
+	url = '{}/v3/identity/token'.format(wml_credentials['url'])
 	response = requests.get(url, headers=headers)
 	mltoken = json.loads(response.text).get('token')
-	header_online = {'Content-Type': 'application/json', 'Authorization': "Bearer " + mltoken}
-	scoring_endpoint = "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/published_models/fe03ef63-3aa8-47ac-8bea-fffc18c74ef6/deployments/2b9eada9-734b-42f7-a974-bbdc56bc9dc3/online"
+
+	header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + mltoken}
+
+
+	scoring_endpoint = "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/deployments/2b9eada9-734b-42f7-a974-bbdc56bc9dc3/online"
 	
 	sample_data = {
     "fields": [
@@ -98,7 +101,7 @@ def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 
 	sample_json = json.dumps(sample_data)
 		
-	response_scoring = requests.post(scoring_endpoint, data=sample_json, headers=header_online)
+	response_scoring = requests.post(scoring_endpoint, json=sample_json, headers=header)
 	
 	result = response_scoring.text
 	return response_scoring
