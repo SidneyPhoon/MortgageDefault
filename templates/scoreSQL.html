@@ -3,11 +3,11 @@
 
 <br>
 
-{% if response_scoring.json()["values"][0][19]==0.0 %}
+{% if response_scoring.json()["values"][0][17]==0.0 %}
     <h2>This mortgage load has a higher probability to NOT DEFAULT!</h2>
     {% endif %}
                 
-{% if response_scoring.json()["values"][0][19]==1.0 %}
+{% if response_scoring.json()["values"][0][17]==1.0 %}
     <h2>This mortgage loan has a higher probability to DEFAULT</h2>
     {% endif %}
 
