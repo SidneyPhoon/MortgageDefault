@@ -80,8 +80,8 @@ def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 		YearsCurrentEmployer, NumberOfCards, CCDebt, Loans, LoanAmount, SalePrice, Location):
 	
 	wml_credentials={"url": "https://ibm-watson-ml.mybluemix.net",
-	"username": "87e7050e-9f43-426b-bd99-dac47c471ff2",
-	"password": "45cd5b72-79ae-4516-8e12-23acca895598"}
+	"username": "XXX",
+	"password": "XXX"}
 	
 	headers = urllib3.util.make_headers(basic_auth='{username}:{password}'.format(username=wml_credentials['username'], password=wml_credentials['password']))
 	url = '{}/v3/identity/token'.format(wml_credentials['url'])
@@ -202,8 +202,8 @@ def scoretest():
 	
 	wml_credentials={
 		"url": "https://ibm-watson-ml.mybluemix.net",
-		"username": "87e7050e-9f43-426b-bd99-dac47c471ff2",
-		"password": "45cd5b72-79ae-4516-8e12-23acca895598"}
+		"username": "XXXf2",
+		"password": "XXX"}
 		
 	headers = urllib3.util.make_headers(basic_auth='{username}:{password}'.format(username=wml_credentials['username'], password=wml_credentials['password']))
 	url = '{}/v3/identity/token'.format(wml_credentials['url'])
