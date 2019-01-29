@@ -155,8 +155,8 @@ def index():
 
 		print(response_scoring.text)
 		
-		prediction = response_scoring.json()["values"][0][19]
-		probability= response_scoring.json()["values"][0][18]
+		prediction = response_scoring.json()["values"][0][17]
+		probability= response_scoring.json()["values"][0][16][0]
 
 		session['prediction'] = prediction
 		session['probability'] = probability
