@@ -32,7 +32,7 @@ app.config.update(dict(
 def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 		YearsCurrentEmployer, NumberOfCards, CCDebt, Loans, LoanAmount, SalePrice, Location):
 	
-	apikey = 'TcEqt9DTURtLg5_ZR3-lLUA2gyehNu8TNtLaJNdrWPij'
+	apikey = '*********'
 	
 	url     = "https://iam.bluemix.net/oidc/token"
 	headers = { "Content-Type" : "application/x-www-form-urlencoded" }
@@ -42,7 +42,7 @@ def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 	response  = requests.post( url, headers=headers, data=data, auth=( IBM_cloud_IAM_uid, IBM_cloud_IAM_pwd ) )
 	iam_token = response.json()["access_token"]
 	
-	ml_instance_id = '2d66a4d8-b28f-47c3-a667-8d7409861f75'
+	ml_instance_id = '*******'
 	
 	header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + iam_token, 'ML-Instance-ID': ml_instance_id}
 
