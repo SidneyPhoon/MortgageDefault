@@ -22,9 +22,9 @@ app.config.update(dict(
 	SECRET_KEY='development key',
 ))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://admin:XZLNWWMRNZHWXOCK@bluemix-sandbox-dal-9-portal.8.dblayer.com:26360/MortgageDefault'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://admin:XZLNWWMRNZHWXOCK@bluemix-sandbox-dal-9-portal.8.dblayer.com:26360/MortgageDefault'
 #postgres://admin:XZLNWWMRNZHWXOCK@bluemix-sandbox-dal-9-portal.8.dblayer.com:26360/mydb
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
 class mortgagedefault(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -79,21 +79,24 @@ def saveDB(FirstName, LastName, Income, AppliedOnline, Residence, YearCurrentAdd
 def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 		YearsCurrentEmployer, NumberOfCards, CCDebt, Loans, LoanAmount, SalePrice, Location):
 	
-	wml_credentials={"url": "https://ibm-watson-ml.mybluemix.net",
-	"username": "XXX",
-	"password": "XXX"}
+	apikey = 'TcEqt9DTURtLg5_ZR3-lLUA2gyehNu8TNtLaJNdrWPij'
 	
-	headers = urllib3.util.make_headers(basic_auth='{username}:{password}'.format(username=wml_credentials['username'], password=wml_credentials['password']))
-	url = '{}/v3/identity/token'.format(wml_credentials['url'])
-	response = requests.get(url, headers=headers)
-	mltoken = json.loads(response.text).get('token')
-
-	header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + mltoken}
-
-
-	scoring_endpoint = "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/deployments/2b9eada9-734b-42f7-a974-bbdc56bc9dc3/online"
+	url     = "https://iam.bluemix.net/oidc/token"
+	headers = { "Content-Type" : "application/x-www-form-urlencoded" }
+	data    = "apikey=" + apikey + "&grant_type=urn:ibm:params:oauth:grant-type:apikey"
+	IBM_cloud_IAM_uid = "bx"
+	IBM_cloud_IAM_pwd = "bx"
+	response  = requests.post( url, headers=headers, data=data, auth=( IBM_cloud_IAM_uid, IBM_cloud_IAM_pwd ) )
+	iam_token = response.json()["access_token"]
 	
-	sample_data = {
+	ml_instance_id = '2d66a4d8-b28f-47c3-a667-8d7409861f75'
+	
+	header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + iam_token, 'ML-Instance-ID': ml_instance_id}
+
+
+	scoring_endpoint = 'https://us-south.ml.cloud.ibm.com/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/deployments/26cb7bff-4da5-4639-bd44-dd7539048d0e/online'
+	
+	scoring_payload = {
     "fields": [
     "ID","Income","AppliedOnline","Residence","YearCurrentAddress","YearsCurrentEmployer","NumberOfCards","CCDebt","Loans","LoanAmount","SalePrice","Location"
     ],
@@ -101,7 +104,7 @@ def predictDefault(ID, Income, AppliedOnline, Residence, YearCurrentAddress,
 
 	#sample_json = json.dumps(sample_data)
 		
-	response_scoring = requests.post(scoring_endpoint, json=sample_data, headers=header)
+	response_scoring = requests.post(scoring_endpoint, json=scoring_payload, headers=header)
 	
 	result = response_scoring.text
 	return response_scoring
@@ -155,8 +158,8 @@ def index():
 
 		print(response_scoring.text)
 		
-		prediction = response_scoring.json()["values"][0][17]
-		probability= response_scoring.json()["values"][0][16][0]
+		prediction = response_scoring.json()["values"][0][19]
+		probability= response_scoring.json()["values"][0][18][0]
 
 		session['prediction'] = prediction
 		session['probability'] = probability
@@ -200,21 +203,18 @@ def saveData():
 @app.route('/scoretest', methods=['GET', 'POST'])
 def scoretest():
 	
-	wml_credentials={
-		"url": "https://ibm-watson-ml.mybluemix.net",
-		"username": "XXXf2",
-		"password": "XXX"}
-		
-	headers = urllib3.util.make_headers(basic_auth='{username}:{password}'.format(username=wml_credentials['username'], password=wml_credentials['password']))
-	url = '{}/v3/identity/token'.format(wml_credentials['url'])
+	service_path = 'https://ibm-watson-ml.mybluemix.net'
+	username = '37a6c710-9576-456e-a8be-5cf859ccb7e9'
+	password = '9eb88d5d-6e5e-4e85-b089-2e6c5ab579b3'
+
+	headers = urllib3.util.make_headers(basic_auth='{}:{}'.format(username, password))
+	url = '{}/v2/identity/token'.format(service_path)
 	response = requests.get(url, headers=headers)
 	mltoken = json.loads(response.text).get('token')
-	
-	header = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + mltoken}
-	
-	scoring_href = "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/2d66a4d8-b28f-47c3-a667-8d7409861f75/deployments/2b9eada9-734b-42f7-a974-bbdc56bc9dc3/online"
+	header_online = {'Content-Type': 'application/json', 'Authorization': mltoken}
+	scoring_href = "https://ibm-watson-ml.mybluemix.net/32768/v2/scoring/2264"
 	payload_scoring = {"record":[999,47422.000000,"YES","Owner Occupier",11.000000,12.000000,2.000000,2010.000000,1.000000,12315.000000,330000,100]}
-	response_scoring = requests.put(scoring_href, json=payload_scoring, headers=header)
+	response_scoring = requests.put(scoring_href, json=payload_scoring, headers=header_online)
 	
 	result = response_scoring.text
 	return render_template('scoretest.html', result=result, response_scoring=response_scoring)
