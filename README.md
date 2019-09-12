@@ -15,4 +15,5 @@ An instance of the application running on IBM Bluemix can be accessed at http://
 
  
   
-  [![Deploy to Bluemix](https://console.bluemix.net/devops/setup/deploy?repository=https://github.com/SidneyPhoon/MortgageDefault)]
+  ![Deploy to Bluemix](https://console.bluemix.net/devops/setup/deploy?repository=https://github.com/SidneyPhoon/MortgageDefault)
+
